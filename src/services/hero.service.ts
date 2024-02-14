@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Hero } from '../interfaces/hero';
-import { HEROES } from '../assets/mock-heroes';
 import { Observable, of } from 'rxjs';
 import { MessageService } from './message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, map, tap } from 'rxjs';
+import { catchError, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +14,7 @@ export class HeroService {
   httpOptions = {
     headers: new HttpHeaders({ 'Content-type': 'application/json' })
   }
-  
+
   constructor(
     private http: HttpClient,
     private messageService: MessageService,
@@ -29,10 +28,8 @@ export class HeroService {
   }
 
   getHero(id: number): Observable<Hero | undefined> {
-    // const hero = of(HEROES.find(it => it.id === id))
-    // this.log(`HeroService: the hero fetched is ${id}`)
-    // return hero
     const url = `${this.heroesUrl}/${id}`
+
     return this.http.get<Hero>(url).pipe(
       tap(_ => this.log(`HeroService: the hero fetched is ${id}`)),
       catchError(this.handleError<Hero>(`getHero id=${id}`))
@@ -55,7 +52,7 @@ export class HeroService {
 
   deleteHero(hero: Hero) {
     const url = `${this.heroesUrl}/${hero.id}`
-    return this.http.delete<Hero>(url, this.httpOptions).pipe(
+    return this.http.delete(url, this.httpOptions).pipe(
       tap(_ => this.log(`Hero ${hero.name} deleted`)),
       catchError(this.handleError<Hero>("deleteHero"))
     )
